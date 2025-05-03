@@ -365,5 +365,3 @@ Configure as before:
      python3 paddler_manager.py
      # Select "Query API" for xxxs
      ```
-
-This implementation is streamlined, leveraging systemd templates for simplicity and `/etc/paddler/models` for intuitive configuration. It supports your test environment and scales to distributed setups. Let me know if you need assistance with specific tasks, like setting up SSH for Raspberry Pi clusters, enhancing config validation, or customizing Grafana dashboards!
