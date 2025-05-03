@@ -1,0 +1,15 @@
+[Unit]
+Description=llama.cpp for %i
+After=network.target
+
+[Service]
+ExecStart=/bin/sh -c 'CONFIG=/etc/paddler/models/%i.yaml; \
+  /usr/bin/yq eval ".model.llama_cpp_binary" $CONFIG \
+  $(/usr/bin/yq eval ".model.llama_cpp_args[]" $CONFIG)'
+Restart=always
+User=paddler
+Group=paddler
+WorkingDirectory=/var/lib/paddler
+
+[Install]
+WantedBy=multi-user.target

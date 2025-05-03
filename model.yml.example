@@ -1,0 +1,23 @@
+model:
+  name: xs
+  description: "3B parameter model"
+  llama_cpp_binary: "/usr/bin/llama.cpp"
+  llama_cpp_args:
+    - "--slots"
+    - "--model=/models/xs.bin"
+    - "--host=127.0.0.1"
+    - "--port=8090"
+balancer:
+  management_addr: "127.0.0.1:8087"
+  reverseproxy_addr: "192.168.2.10:8082"
+  statsd_prefix: "paddler.xs"
+  statsd_addr: "127.0.0.1:8125"
+  dashboard_enabled: true
+  paddler_binary: "/usr/bin/paddler"
+agents:
+  - name: agent1
+    host: "localhost"
+    external_llamacpp_addr: "127.0.0.1:8090"
+    local_llamacpp_addr: "127.0.0.1:8090"
+    management_addr: "127.0.0.1:8087"
+    api_key: ""

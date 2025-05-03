@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  statsd-exporter:
+    image: prom/statsd-exporter
+    ports:
+      - "9102:9102"
+      - "8125:8125/udp"
+    command: --statsd.listen-udp=:8125 --web.listen-address=:9102
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  paddler-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"

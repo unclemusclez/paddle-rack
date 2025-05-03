@@ -1,0 +1,20 @@
+[Unit]
+Description=Paddler load balancer for %i
+After=network.target llama-cpp@%i.service
+Requires=llama-cpp@%i.service
+
+[Service]
+ExecStart=/bin/sh -c 'CONFIG=/etc/paddler/models/%i.yaml; \
+  /usr/bin/yq eval ".balancer.paddler_binary" $CONFIG balancer \
+  --management-addr $(/usr/bin/yq eval ".balancer.management_addr" $CONFIG) \
+  --reverseproxy-addr $(/usr/bin/yq eval ".balancer.reverseproxy_addr" $CONFIG) \
+  --statsd-addr=$(/usr/bin/yq eval ".balancer.statsd_addr" $CONFIG) \
+  --statsd-prefix=$(/usr/bin/yq eval ".balancer.statsd_prefix" $CONFIG) \
+  $(/usr/bin/yq eval ".balancer.dashboard_enabled" $CONFIG | grep -q true && echo "--management-dashboard-enable")'
+Restart=always
+User=paddler
+Group=paddler
+WorkingDirectory=/var/lib/paddler
+
+[Install]
+WantedBy=multi-user.target

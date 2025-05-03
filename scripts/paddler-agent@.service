@@ -1,0 +1,22 @@
+[Unit]
+Description=Paddler agent for %i
+After=network.target llama-cpp@%p.service
+Requires=llama-cpp@%p.service
+PartOf=paddler@%p.service
+
+[Service]
+ExecStart=/bin/sh -c 'CONFIG=/etc/paddler/models/%p.yaml; \
+  AGENT_NAME=$(echo %i | cut -d- -f2-); \
+  /usr/bin/yq eval ".balancer.paddler_binary" $CONFIG agent \
+  --external-llamacpp-addr $(/usr/bin/yq eval ".agents[] | select(.name == \"$AGENT_NAME\") | .external_llamacpp_addr" $CONFIG) \
+  --local-llamacpp-addr $(/usr/bin/yq eval ".agents[] | select(.name == \"$AGENT_NAME\") | .local_llamacpp_addr" $CONFIG) \
+  --management-addr $(/usr/bin/yq eval ".agents[] | select(.name == \"$AGENT_NAME\") | .management_addr" $CONFIG) \
+  --name $AGENT_NAME \
+  $(/usr/bin/yq eval ".agents[] | select(.name == \"$AGENT_NAME\") | .api_key" $CONFIG | grep -q . && echo "--local-llamacpp-api-key $(/usr/bin/yq eval \".agents[] | select(.name == \\"$AGENT_NAME\\") | .api_key\" $CONFIG)")'
+Restart=always
+User=paddler
+Group=paddler
+WorkingDirectory=/var/lib/paddler
+
+[Install]
+WantedBy=multi-user.target
